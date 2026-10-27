@@ -1,0 +1,128 @@
+Backend Developer ‐ SAP Cloud Application Programming Model Questions: Can You Solve These Real World Practice Scenarios?
+You can read the CAP documentation twice and still get stuck the first time a service returns an empty list or a deployment fails. That is because working with the SAP Cloud Application Programming Model is less about remembering definitions and more about understanding how the pieces connect. If you are collecting Backend Developer - SAP Cloud Application Programming Model Questions to prepare for the SAP C_CPE certification, the best use of them is to test your reasoning, not to memorize option letters.
+
+The six questions below are original practice questions created for learning purposes. They are not actual or leaked exam questions.
+
+TL;DR
+What you will learn: how to reason through CAP scenarios covering side-by-side extensions, CDS modeling, service exposure, authorization, external APIs and deployment on SAP BTP.
+What to prioritize: the flow from data model to service to security to deployment, not isolated syntax.
+How to use practice questions: answer before reading the explanation, then write down why each wrong option fails. Treat every miss as a revision topic.
+What does SAP say about this certification?
+Verified facts first. According to SAP Learning, the SAP Certified Backend Developer – SAP Cloud Application Programming Model certification validates fundamental knowledge of using CAP to design and implement extension applications for SAP S/4HANA Cloud through side-by-side extensibility on SAP BTP. It is aimed at backend developers who work with Node.js or Java, Core Data Services (CDS) and Fiori Elements.
+
+The rest of this article, including the questions, checklist and tips, is independent study advice. Exam content, format and policies can change, so check them with SAP before you plan.
+
+Practice scenarios: can you solve them?
+Question 1: Why build a side-by-side extension?
+A company runs SAP S/4HANA Cloud and wants to add a custom supplier-rating feature. The team does not want to change the core system. What is the best approach?
+
+A. Modify the standard S/4HANA code directly
+B. Build a separate CAP application on SAP BTP that connects to S/4HANA through APIs
+C. Export the data to spreadsheets and maintain ratings manually
+D. Wait for SAP to deliver the feature as standard
+Answer: B.
+
+A side-by-side extension runs outside the core system on SAP BTP and talks to it through released APIs. That keeps the core clean and makes upgrades easier. Option A defeats the purpose of clean core extensibility, and option C creates manual work and unreliable data.
+
+Follow-up: What risks would you accept if you changed the core instead? Think about upgrades and support.
+
+Question 2: How should related entities be modeled?
+An Orders entity has several order items. When an order is deleted, its items must be deleted too, and one request should be able to create both. Which CDS modeling choice fits?
+
+A. A plain association from items to orders
+B. Two unrelated entities that share an ID
+C. A composition of items in the Orders entity
+D. A view over both entities
+Answer: C.
+
+A composition tells CAP that the items belong to the order and share its lifecycle. That enables deep inserts and cascading deletes. An association is only a reference, so deleting the order would leave the items behind.
+
+Follow-up: How would you approach this in a real project if items could also be reused across orders? Would composition still fit?
+
+Question 3: What happens when an entity is not exposed?
+Your database model contains a Customers entity, but your service definition only exposes Orders. A client requests the Customers data from the service. What happens?
+
+A. The client receives the data because the entity exists in the database
+B. The service creates the entity on demand
+C. The request fails because the entity is not part of the service
+D. The framework exposes it automatically after a restart
+Answer: C.
+
+A CAP service only serves what its definition includes. Entities in the database model are not reachable through the API unless you expose them, usually as projections. This is also a useful security feature, since you decide which fields and entities consumers can see.
+
+Follow-up: What would happen if the service definition were not exposed at all? The application would still run, but clients would have no endpoint to call.
+
+Question 4: Why does a signed-in user get 403?
+After deployment, users sign in successfully but every service call returns 403 Forbidden. Locally, everything worked. What is the most likely cause?
+
+A. The user is authenticated but lacks the role the service requires
+B. The database is empty
+C. The CDS file has a syntax error
+D. The user's password has expired
+Answer: A.
+
+A 403 means the caller was identified but is not authorized. Locally, CAP can use mocked users, which can hide missing role assignments. On SAP BTP, the roles defined in your security configuration must be assigned to users through role collections. An empty database would give empty results, not a 403, and a syntax error would stop the app from starting.
+
+Follow-up: How would you investigate? Check the token's scopes, compare roles in your service rules with the security configuration, and confirm the user's role collection.
+
+Question 5: How should you consume an external API?
+Your CAP application needs business partner data from SAP S/4HANA Cloud. What is the recommended approach?
+
+A. Hardcode the API URL and a password in your handler
+B. Copy the partner data into your own database by hand
+C. Call the API from the frontend only
+D. Import the API definition, configure it as a remote service with a destination, and call it from your service
+Answer: D.
+
+Importing the API definition generates a CDS model of the remote service, and a destination keeps the endpoint and credentials out of your code. Hardcoding credentials is a security risk and breaks across landscapes. Copying data manually goes stale quickly.
+
+Follow-up: How would the setup differ between a development and a production subaccount? Think about which parts live in configuration instead of code.
+
+Question 6: How do you deploy with persistent data?
+Your app works locally with an in-memory SQLite database. You need to deploy it to Cloud Foundry on SAP BTP with persistent data. What should you do?
+
+A. Run a plain push of the service module and keep SQLite
+B. Copy the local database file into the container
+C. Disable authentication to simplify deployment
+D. Add SAP HANA, authorization and MTA support, build the archive, then deploy it
+Answer: D.
+
+A typical flow adds the production capabilities to the project, builds a multitarget application archive and deploys it, so the database deployer creates the tables in an HDI container. A plain push skips that step, so the tables never exist. SQLite is a development convenience, not a production database.
+
+Follow-up: If the app crashes after deployment, what is your first diagnostic step? Read the recent logs and check that every required service is bound.
+
+Where do the official materials fit in?
+Practice questions only help if your underlying knowledge is accurate. Use the official SAP certification to see the recommended learning content, technical requirements and current assessment details. SAP also recommends completing the learning journey Discover SAP Business Technology Platform before the exam.
+
+What are the most common preparation mistakes?
+Learning syntax without application flow. Knowing a keyword is less useful than knowing where it fits between model, service and deployment.
+Skipping hands-on work. Reading about handlers is not the same as debugging one.
+Trusting local behavior. Mocked users and in-memory databases hide problems that appear on SAP BTP.
+Guessing instead of reading errors. Logs and status codes usually point to the cause.
+Relying on outdated summaries. Always confirm the current exam details with SAP.
+Practical revision checklist
+I can model entities, associations and compositions and explain the difference.
+I can define a service, expose projections and add a simple handler.
+I can set up roles and explain how they reach users on SAP BTP.
+I can consume an external API through a destination.
+I can build and deploy a CAP app to Cloud Foundry and read its logs.
+I can explain why the wrong options in the questions above fail.
+Quick self-assessment
+Count how many of the six questions you answered correctly and could explain.
+
+0 to 2: Review the fundamentals of CDS and services first.
+3 to 4: Build small examples for each topic you missed.
+5 to 6: Do a final hands-on run, then confirm the current exam details with SAP.
+This is an informal study aid, not a predictor of exam results.
+
+Frequently asked questions
+Are these real exam questions? No. They are original practice questions created for learning purposes.
+
+How should I use practice questions? Attempt them without notes, review every explanation, and log the topics you missed.
+
+Why does hands-on practice matter? CAP problems often come from how configuration, services and security interact, and you rarely see that by reading alone.
+
+How do I confirm the current assessment format? Check SAP's certification page before booking, since details can change.
+
+Conclusion
+Strong preparation combines official SAP learning, regular hands-on practice and honest revision of weak topics. Build small projects, break them on purpose and fix them from the logs. When you want extra topic review and practice material to sit alongside SAP's own content, The Exam Questions can be a useful additional resource.
